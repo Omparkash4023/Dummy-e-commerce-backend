@@ -9,7 +9,17 @@ const app = express();
 const port = process.env.PORT || 4000;
 const secretKey = process.env.secretKey;
 
-app.use(cors());
+// app.use(cors());
+// Configure CORS to allow requests from specific origins (including localhost)
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://dummy-e-commerce-backend.onrender.com",
+    ],
+    credentials: true, // Include credentials (e.g., cookies) in CORS requests if needed
+  })
+);
 app.use(express.json());
 
 // MySQL Database Configuration
@@ -51,8 +61,7 @@ app.post("/post/signup", async (req, res) => {
 
     if (results.length > 0) {
       return res.status(409).json({ message: "Email already exists" });
-    } 
-    else {
+    } else {
       const saltPassword = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(password, saltPassword);
 
