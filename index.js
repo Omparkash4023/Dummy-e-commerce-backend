@@ -20,6 +20,14 @@ const db = mysql.createConnection({
   database: process.env.DATABASE,
 });
 
+// // MySQL Database Configuration of live
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "dummy-e-commerce",
+// });
+
 // Connect to the MySQL database
 db.connect((error) => {
   if (error) {
@@ -33,17 +41,17 @@ db.connect((error) => {
 app.post("/post/signup", async (req, res) => {
   const { username, email, password } = req.body;
 
-  // Check if the email already exists in the database
-  const checkEmailQuery = "SELECT * FROM signup WHERE email = ?";
-  db.query(checkEmailQuery, [email], async (error, results) => {
-    if (error) {
-      console.error("Database error:", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
+  // // Check if the email already exists in the database
+  // const checkEmailQuery = "SELECT * FROM signup WHERE email = ?";
+  // db.query(checkEmailQuery, [email], async (error, results) => {
+  //   if (error) {
+  //     console.error("Database error:", error);
+  //     return res.status(500).json({ message: "Internal server error" });
+  //   }
 
-    if (results.length > 0) {
-      return res.status(409).json({ message: "Email already exists" });
-    }
+  //   if (results.length > 0) {
+  //     return res.status(409).json({ message: "Email already exists" });
+  //   }
 
     const saltPassword = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, saltPassword);
@@ -57,7 +65,7 @@ app.post("/post/signup", async (req, res) => {
       console.log("Data inserted");
       res.status(200).json({ message: "Form submitted successfully" });
     });
-  });
+  // });
 });
 
 
