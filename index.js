@@ -3,7 +3,7 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -41,33 +41,38 @@ db.connect((error) => {
 app.post("/post/signup", async (req, res) => {
   const { username, email, password } = req.body;
 
-  // // Check if the email already exists in the database
-  // const checkEmailQuery = "SELECT * FROM signup WHERE email = ?";
-  // db.query(checkEmailQuery, [email], async (error, results) => {
-  //   if (error) {
-  //     console.error("Database error:", error);
-  //     return res.status(500).json({ message: "Internal server error" });
-  //   }
+  // Check if the email already exists in the database
+  const checkEmailQuery = "SELECT * FROM signup WHERE email = ?";
+  db.query(checkEmailQuery, [email], async (error, results) => {
+    if (error) {
+      console.error("Database error-osssssss:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
 
-  //   if (results.length > 0) {
-  //     return res.status(409).json({ message: "Email already exists" });
-  //   }
+    if (results.length > 0) {
+      return res.status(409).json({ message: "Email already exists" });
+    } 
+    else {
+      const saltPassword = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, saltPassword);
 
-    const saltPassword = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(password, saltPassword);
-
-    const insertUserQuery = "INSERT INTO signup (username, email, password) VALUES (?, ?, ?)";
-    db.query(insertUserQuery, [username, email, hashPassword], (err, result) => {
-      if (err) {
-        console.error("Table error:", err);
-        return res.status(500).json({ message: "Internal server error" });
-      }
-      console.log("Data inserted");
-      res.status(200).json({ message: "Form submitted successfully" });
-    });
-  // });
+      const insertUserQuery =
+        "INSERT INTO signup (username, email, password) VALUES (?, ?, ?)";
+      db.query(
+        insertUserQuery,
+        [username, email, hashPassword],
+        (err, result) => {
+          if (err) {
+            console.error("Table error:", err);
+            return res.status(500).json({ message: "Internal server error" });
+          }
+          console.log("Data inserted");
+          res.status(200).json({ message: "Form submitted successfully" });
+        }
+      );
+    }
+  });
 });
-
 
 // login api
 app.post("/post/login", async (req, res) => {
@@ -134,9 +139,8 @@ app.get("/protected/routes", verifyToken, async (req, res) => {
   }
 
   res.status(200).json({ message: "success", user: req.user });
-  console.log("req.userrrrr", req.user)
+  console.log("req.userrrrr", req.user);
 });
-
 
 // Listen port
 app.listen(port, () => {
