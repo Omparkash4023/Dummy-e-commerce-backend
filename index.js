@@ -7,7 +7,7 @@ require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 4000;
-const secretKey = process.env.secretKey;
+const secretKey = process.env.SECRETKEY;
 
 // app.use(cors());
 // Configure CORS to allow requests from specific origins (including localhost)
