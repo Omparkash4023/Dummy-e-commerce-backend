@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://dummy-e-commerce.vercel.app/",
+      "https://dummy-e-commerce.vercel.app",
       "https://dummy-e-commerce-backend.onrender.com",
     ],
     credentials: true, // Include credentials (e.g., cookies) in CORS requests if needed
