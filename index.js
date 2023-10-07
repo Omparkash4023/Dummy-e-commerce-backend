@@ -78,45 +78,38 @@ app.post("/post/signup", async (req, res) => {
 app.post("/post/login", async (req, res) => {
   // res.status(200).json({ message: "form submitted successfully" });
   const { email, password } = req.body;
-  
-
-  if(email, password) {
-    res.status(200).json({ message: "Form submitted successfully" });
-    console.log("email, passworddddddd", email, password)
+  // console.log("reqqqqqqqqqqqqq", req.body)
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email and password are required." });
   }
 
-  // console.log("reqqqqqqqqqqqqq", req.body)
-  // if (!email || !password) {
-  //   return res
-  //     .status(400)
-  //     .json({ message: "Email and password are required." });
-  // }
+  // Check if the email exists in the database
+  const checkEmailQuery = "SELECT * FROM signup WHERE email = ?";
+  db.query(checkEmailQuery, [email], async (error, results) => {
+    if (error) {
+      console.error("Database error:", error);
+      return res.status(500).json({ message: "Internal server error." });
+    }
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Email not found." });
+    } else {
+      const validPassword = await bcrypt.compare(password, results[0].password);
 
-  // // Check if the email exists in the database
-  // const checkEmailQuery = "SELECT * FROM signup WHERE email = ?";
-  // db.query(checkEmailQuery, [email], async (error, results) => {
-  //   if (error) {
-  //     console.error("Database error:", error);
-  //     return res.status(500).json({ message: "Internal server error." });
-  //   }
-  //   if (results.length === 0) {
-  //     return res.status(401).json({ message: "Email not found." });
-  //   } else {
-  //     const validPassword = await bcrypt.compare(password, results[0].password);
-
-  //     if (validPassword) {
-  //       console.log("Login successfully");
-  //       const token = jwt.sign({ results, validPassword }, secretKey, {
-  //         expiresIn: "1h",
-  //       });
-  //       return res
-  //         .status(200)
-  //         .json({ message: "Login successfully", data: results, token: token });
-  //     } else {
-  //       return res.status(401).json({ message: "Incorrect password." });
-  //     }
-  //   }
-  // });
+      if (validPassword) {
+        console.log("Login successfully");
+        const token = jwt.sign({ results, validPassword }, secretKey, {
+          expiresIn: "1h",
+        });
+        return res
+          .status(200)
+          .json({ message: "Login successfully", data: results, token: token });
+      } else {
+        return res.status(401).json({ message: "Incorrect password." });
+      }
+    }
+  });
 });
 
 // Middleware to verify JWT token
