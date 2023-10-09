@@ -29,6 +29,7 @@ const db = mysql.createConnection({
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
+  connectionLimit: process.env.CONNECTIONLIMIT, // Adjust this value based on your requirement
 });
 
 // // MySQL Database Configuration of live
