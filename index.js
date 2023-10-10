@@ -110,9 +110,8 @@ app.post("/post/login", async (req, res) => {
 
       if (validPassword) {
         console.log("Login successfully");
-        const token = jwt.sign({ results, validPassword }, secretKey, 
-          // {expiresIn: "1h",}
-          );
+        // const token = jwt.sign({ results, validPassword }, secretKey, {expiresIn: "1h",});
+        const token = jwt.sign({ results, validPassword }, secretKey);
         return res
           .status(200)
           .json({ message: "Login successfully", data: results, token: token });
